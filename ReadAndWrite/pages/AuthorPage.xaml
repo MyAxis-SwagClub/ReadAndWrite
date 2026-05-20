@@ -1,14 +1,63 @@
-﻿<Page x:Class="ReadAndWrite.pages.AuthorPage"
+﻿<Page x:Class="ReadAndWrite.Pages.AuthorPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:ReadAndWrite.pages"
-      mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="AuthorPage">
+      Title="Мои книги" Background="#EAECEE">
 
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Шапка -->
+        <Border Grid.Row="0" Background="#1A5276" Padding="15,12">
+            <TextBlock Text="✍ Мои книги"
+                       FontSize="18" FontWeight="Bold" Foreground="White"/>
+        </Border>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="15">
+
+                <!-- Добавить книгу -->
+                <Border Background="White" CornerRadius="4"
+                        Padding="20" Margin="0,0,0,12">
+                    <StackPanel>
+                        <TextBlock Text="Добавить новую книгу"
+                                   FontSize="15" FontWeight="Bold"
+                                   Foreground="#1A5276" Margin="0,0,0,12"/>
+
+                        <TextBlock Text="Название" FontSize="12"
+                                   Foreground="#777" Margin="0,0,0,4"/>
+                        <TextBox x:Name="TxtTitle" Padding="7"
+                                 BorderBrush="#CCC" Margin="0,0,0,10"/>
+
+                        <TextBlock Text="Описание" FontSize="12"
+                                   Foreground="#777" Margin="0,0,0,4"/>
+                        <TextBox x:Name="TxtDescription" Height="70"
+                                 TextWrapping="Wrap" AcceptsReturn="True"
+                                 Padding="7" BorderBrush="#CCC"
+                                 Margin="0,0,0,10"/>
+
+                        <TextBlock Text="Жанр" FontSize="12"
+                                   Foreground="#777" Margin="0,0,0,4"/>
+                        <ComboBox x:Name="CmbGenre" Padding="7"
+                                  Margin="0,0,0,15"/>
+
+                        <Button Content="Опубликовать книгу"
+                                Click="BtnPublish_Click"
+                                Background="#1E8449" Foreground="White"
+                                BorderThickness="0" Padding="12,7"
+                                HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Мои книги -->
+                <TextBlock Text="Опубликованные книги"
+                           FontSize="15" FontWeight="Bold"
+                           Foreground="#1A5276" Margin="0,0,0,8"/>
+                <StackPanel x:Name="BooksPanel"/>
+
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Page>

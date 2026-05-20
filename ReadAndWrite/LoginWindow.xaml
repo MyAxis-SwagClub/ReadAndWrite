@@ -1,0 +1,10 @@
+﻿<Window x:Class="ReadAndWrite.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Читай, Пиши и не спиши"
+        Height="450" Width="380"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+
+    <Frame x:Name="LoginFrame" NavigationUIVisibility="Hidden"/>
+</Window>
