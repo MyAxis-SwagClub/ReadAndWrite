@@ -7,12 +7,13 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0"/>
             <ColumnDefinition Width="60"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <!-- Sidebar -->
-        <StackPanel Grid.Column="0" Background="SteelBlue">
+        <StackPanel Grid.Column="0" Background="SteelBlue" Grid.ColumnSpan="2">
             <Button x:Name="BtnCatalog" Content="📚"
                     FontSize="22" Padding="10" BorderThickness="0"
                     Background="Transparent" Foreground="White"
@@ -52,7 +53,7 @@
         </StackPanel>
 
         <!-- Основной фрейм -->
-        <Frame x:Name="MainFrame" Grid.Column="1"
+        <Frame x:Name="MainFrame" Grid.Column="2"
                NavigationUIVisibility="Hidden"/>
     </Grid>
 </Window>
