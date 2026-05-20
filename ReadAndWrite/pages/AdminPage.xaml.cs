@@ -99,6 +99,13 @@ namespace ReadAndWrite.Pages
         private void BtnFreezeUser_Click(object sender, RoutedEventArgs e)
         {
             int userId = (int)((Button)sender).Tag;
+
+            if (userId == CurrentUser.UserId)
+            {
+                MessageBox.Show("Вы не можете заморозить самого себя!");
+                return;
+            }
+
             var user = DatabaseHelper.ExecuteQuery(
                 $"SELECT IsFrozen FROM Users WHERE UserId = {userId}");
 
@@ -108,8 +115,8 @@ namespace ReadAndWrite.Pages
                 "UPDATE Users SET IsFrozen = @val WHERE UserId = @id",
                 new SqlParameter[]
                 {
-                    new SqlParameter("@val", !isFrozen),
-                    new SqlParameter("@id", userId)
+            new SqlParameter("@val", !isFrozen),
+            new SqlParameter("@id", userId)
                 });
             LoadUsers();
         }
