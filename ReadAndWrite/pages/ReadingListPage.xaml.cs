@@ -135,13 +135,6 @@ namespace ReadAndWrite.Pages
 
         private void BtnFilter_Click(object sender, RoutedEventArgs e)
         {
-            // Сбрасываем цвет всех кнопок
-            foreach (var child in ((StackPanel)((Border)((StackPanel)ListPanel.Parent)
-                .Parent).Parent).Children)
-            {
-                // проще через имена
-            }
-
             string section = ((Button)sender).Tag?.ToString() ?? "";
             LoadList(section);
         }
