@@ -3,57 +3,76 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Читай, Пиши и не спиши"
         Height="700" Width="1100"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        Background="#F4F6F8">
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0"/>
-            <ColumnDefinition Width="60"/>
+            <ColumnDefinition Width="65"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <!-- Sidebar -->
-        <StackPanel Grid.Column="0" Background="SteelBlue" Grid.ColumnSpan="2">
-            <Button x:Name="BtnCatalog" Content="📚"
-                    FontSize="22" Padding="10" BorderThickness="0"
-                    Background="Transparent" Foreground="White"
-                    Click="BtnCatalog_Click" Margin="0,10,0,0">
-                <Button.ToolTip>Каталог книг</Button.ToolTip>
-            </Button>
-            <Button x:Name="BtnLists" Content="📋"
-                    FontSize="22" Padding="10" BorderThickness="0"
-                    Background="Transparent" Foreground="White"
-                    Click="BtnLists_Click">
-                <Button.ToolTip>Списки чтения</Button.ToolTip>
-            </Button>
-            <Button x:Name="BtnProfile" Content="👤"
-                    FontSize="22" Padding="10" BorderThickness="0"
-                    Background="Transparent" Foreground="White"
-                    Click="BtnProfile_Click">
-                <Button.ToolTip>Профиль</Button.ToolTip>
-            </Button>
-            <Button x:Name="BtnAuthor" Content="✍️"
-                    FontSize="22" Padding="10" BorderThickness="0"
-                    Background="Transparent" Foreground="White"
-                    Click="BtnAuthor_Click" Visibility="Collapsed">
-                <Button.ToolTip>Страница автора</Button.ToolTip>
-            </Button>
-            <Button x:Name="BtnAdmin" Content="⚙️"
-                    FontSize="22" Padding="10" BorderThickness="0"
-                    Background="Transparent" Foreground="White"
-                    Click="BtnAdmin_Click" Visibility="Collapsed">
-                <Button.ToolTip>Администрирование</Button.ToolTip>
-            </Button>
-            <Button x:Name="BtnFrozen" Content="🔒"
-                    FontSize="22" Padding="10" BorderThickness="0"
-                    Background="Transparent" Foreground="Yellow"
-                    Click="BtnFrozen_Click" Visibility="Collapsed">
-                <Button.ToolTip>Аккаунт заморожен</Button.ToolTip>
-            </Button>
-        </StackPanel>
+        <Border Grid.Column="0" Background="#2C3E50">
+            <StackPanel>
+                <!-- Логотип -->
+                <Border Background="#1A252F" Padding="8,15">
+                    <TextBlock Text="📚" FontSize="24"
+                               HorizontalAlignment="Center"/>
+                </Border>
+
+                <Button x:Name="BtnCatalog" Content="🏠"
+                        FontSize="22" Padding="10,12"
+                        BorderThickness="0"
+                        Background="Transparent" Foreground="White"
+                        Click="BtnCatalog_Click" Margin="0,8,0,0">
+                    <Button.ToolTip>Каталог книг</Button.ToolTip>
+                </Button>
+
+                <Button x:Name="BtnLists" Content="📋"
+                        FontSize="22" Padding="10,12"
+                        BorderThickness="0"
+                        Background="Transparent" Foreground="White"
+                        Click="BtnLists_Click">
+                    <Button.ToolTip>Списки чтения</Button.ToolTip>
+                </Button>
+
+                <Button x:Name="BtnProfile" Content="👤"
+                        FontSize="22" Padding="10,12"
+                        BorderThickness="0"
+                        Background="Transparent" Foreground="White"
+                        Click="BtnProfile_Click">
+                    <Button.ToolTip>Профиль</Button.ToolTip>
+                </Button>
+
+                <Button x:Name="BtnAuthor" Content="✍️"
+                        FontSize="22" Padding="10,12"
+                        BorderThickness="0"
+                        Background="Transparent" Foreground="White"
+                        Click="BtnAuthor_Click" Visibility="Collapsed">
+                    <Button.ToolTip>Мои книги</Button.ToolTip>
+                </Button>
+
+                <Button x:Name="BtnAdmin" Content="⚙️"
+                        FontSize="22" Padding="10,12"
+                        BorderThickness="0"
+                        Background="Transparent" Foreground="White"
+                        Click="BtnAdmin_Click" Visibility="Collapsed">
+                    <Button.ToolTip>Администрирование</Button.ToolTip>
+                </Button>
+
+                <Button x:Name="BtnFrozen" Content="🔒"
+                        FontSize="22" Padding="10,12"
+                        BorderThickness="0"
+                        Background="Transparent" Foreground="#E74C3C"
+                        Click="BtnFrozen_Click" Visibility="Collapsed">
+                    <Button.ToolTip>Аккаунт заморожен</Button.ToolTip>
+                </Button>
+            </StackPanel>
+        </Border>
 
         <!-- Основной фрейм -->
-        <Frame x:Name="MainFrame" Grid.Column="2"
+        <Frame x:Name="MainFrame" Grid.Column="1"
                NavigationUIVisibility="Hidden"/>
     </Grid>
 </Window>
