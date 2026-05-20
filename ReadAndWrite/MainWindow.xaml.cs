@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using ReadAndWrite.pages;
 using ReadAndWrite.Pages;
 
 namespace ReadAndWrite

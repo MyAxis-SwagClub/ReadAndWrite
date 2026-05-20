@@ -1,14 +1,40 @@
-﻿<Page x:Class="ReadAndWrite.pages.AdminPage"
+﻿<Page x:Class="ReadAndWrite.Pages.AdminPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:ReadAndWrite.pages"
-      mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="AdminPage">
+      Title="Администрирование" Background="#EAECEE">
 
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Шапка -->
+        <Border Grid.Row="0" Background="#1A5276" Padding="15,12">
+            <TextBlock Text="⚙ Администрирование"
+                       FontSize="18" FontWeight="Bold" Foreground="White"/>
+        </Border>
+
+        <!-- Вкладки -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Background="White">
+            <Button Content="Пользователи" Click="BtnTab_Click" Tag="users"
+                    Background="#1A5276" Foreground="White"
+                    BorderThickness="0" Padding="15,10" FontSize="13"/>
+            <Button Content="Книги" Click="BtnTab_Click" Tag="books"
+                    Background="Transparent" Foreground="#555"
+                    BorderThickness="0" Padding="15,10" FontSize="13"/>
+            <Button Content="Жалобы" Click="BtnTab_Click" Tag="complaints"
+                    Background="Transparent" Foreground="#555"
+                    BorderThickness="0" Padding="15,10" FontSize="13"/>
+            <Button Content="Заявки на автора" Click="BtnTab_Click" Tag="requests"
+                    Background="Transparent" Foreground="#555"
+                    BorderThickness="0" Padding="15,10" FontSize="13"/>
+        </StackPanel>
+
+        <!-- Контент -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="ContentPanel" Margin="15"/>
+        </ScrollViewer>
     </Grid>
 </Page>
