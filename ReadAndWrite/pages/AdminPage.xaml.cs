@@ -13,7 +13,112 @@ namespace ReadAndWrite.Pages
             InitializeComponent();
             Loaded += (s, e) => LoadUsers();
         }
+        private void LoadReviews()
+        {
+            var data = DatabaseHelper.ExecuteQuery(@"
+        SELECT r.ReviewId, r.Rating, r.ReviewText,
+               u.DisplayName AS UserName,
+               b.Title AS BookTitle
+        FROM Reviews r
+        JOIN Users u ON r.UserId = u.UserId
+        JOIN Books b ON r.BookId = b.BookId
+        ORDER BY r.ReviewId DESC");
 
+            ContentPanel.Children.Clear();
+
+            if (data.Rows.Count == 0)
+            {
+                ContentPanel.Children.Add(new TextBlock
+                {
+                    Text = "Отзывов нет",
+                    FontSize = 14,
+                    Foreground = Brushes.Gray,
+                    Margin = new Thickness(0, 20, 0, 0),
+                    HorizontalAlignment = HorizontalAlignment.Center
+                });
+                return;
+            }
+
+            foreach (DataRow row in data.Rows)
+            {
+                int reviewId = (int)row["ReviewId"];
+
+                var card = new Border
+                {
+                    Background = Brushes.White,
+                    CornerRadius = new CornerRadius(4),
+                    Padding = new Thickness(15),
+                    Margin = new Thickness(0, 0, 0, 8)
+                };
+
+                var grid = new Grid();
+                grid.ColumnDefinitions.Add(new ColumnDefinition
+                { Width = new GridLength(1, GridUnitType.Star) });
+                grid.ColumnDefinitions.Add(new ColumnDefinition
+                { Width = GridLength.Auto });
+
+                var info = new StackPanel();
+
+                info.Children.Add(new TextBlock
+                {
+                    Text = $"{row["UserName"]}  ⭐ {row["Rating"]}",
+                    FontSize = 14,
+                    FontWeight = FontWeights.Bold,
+                    Foreground = new SolidColorBrush(Color.FromRgb(26, 82, 118))
+                });
+
+                info.Children.Add(new TextBlock
+                {
+                    Text = $"Книга: {row["BookTitle"]}",
+                    FontSize = 12,
+                    Foreground = Brushes.Gray,
+                    Margin = new Thickness(0, 3, 0, 3)
+                });
+
+                info.Children.Add(new TextBlock
+                {
+                    Text = row["ReviewText"]?.ToString(),
+                    FontSize = 13,
+                    TextWrapping = TextWrapping.Wrap,
+                    Foreground = new SolidColorBrush(Color.FromRgb(80, 80, 80))
+                });
+
+                Grid.SetColumn(info, 0);
+                grid.Children.Add(info);
+
+                var btnDelete = new Button
+                {
+                    Content = "Удалить",
+                    Background = new SolidColorBrush(Color.FromRgb(192, 57, 43)),
+                    Foreground = Brushes.White,
+                    BorderThickness = new Thickness(0),
+                    Padding = new Thickness(10, 5, 10, 5),
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+                btnDelete.Click += (s, e) =>
+                {
+                    var result = MessageBox.Show(
+                        "Удалить этот отзыв?", "Подтверждение",
+                        MessageBoxButton.YesNo);
+
+                    if (result != MessageBoxResult.Yes) return;
+
+                    DatabaseHelper.ExecuteNonQuery(
+                        "DELETE FROM Reviews WHERE ReviewId = @id",
+                        new SqlParameter[]
+                        {
+                    new SqlParameter("@id", reviewId)
+                        });
+                    LoadReviews();
+                };
+
+                Grid.SetColumn(btnDelete, 1);
+                grid.Children.Add(btnDelete);
+
+                card.Child = grid;
+                ContentPanel.Children.Add(card);
+            }
+        }
         private void BtnTab_Click(object sender, RoutedEventArgs e)
         {
             string tab = ((Button)sender).Tag.ToString();
@@ -21,6 +126,7 @@ namespace ReadAndWrite.Pages
             else if (tab == "books") LoadBooks();
             else if (tab == "complaints") LoadComplaints();
             else if (tab == "requests") LoadRequests();
+            else if (tab == "reviews") LoadReviews();
         }
 
         // ── ПОЛЬЗОВАТЕЛИ ──────────────────────────────────────────────
@@ -435,6 +541,8 @@ namespace ReadAndWrite.Pages
                 card.Child = grid;
                 ContentPanel.Children.Add(card);
             }
+
         }
     }
+
 }

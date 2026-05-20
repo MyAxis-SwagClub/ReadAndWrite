@@ -30,6 +30,9 @@
             <Button Content="Заявки на автора" Click="BtnTab_Click" Tag="requests"
                     Background="Transparent" Foreground="#555"
                     BorderThickness="0" Padding="15,10" FontSize="13"/>
+            <Button Content="Отзывы" Click="BtnTab_Click" Tag="reviews"
+                    Background="Transparent" Foreground="#555"
+                    BorderThickness="0" Padding="15,10" FontSize="13"/>
         </StackPanel>
 
         <!-- Контент -->
