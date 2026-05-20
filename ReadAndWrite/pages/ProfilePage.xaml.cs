@@ -14,6 +14,11 @@ namespace ReadAndWrite.Pages
 
         private void LoadProfile()
         {
+            var data = DatabaseHelper.ExecuteQuery(
+                $"SELECT IsFrozen FROM Users WHERE UserId = {CurrentUser.UserId}");
+            if (data.Rows.Count > 0)
+                CurrentUser.IsFrozen = (bool)data.Rows[0]["IsFrozen"];
+
             TxtDisplayName.Text = CurrentUser.DisplayName;
             TxtLogin.Text = "Логин: " + CurrentUser.Login;
             TxtEmail.Text = "Email: " + CurrentUser.Email;
@@ -26,13 +31,24 @@ namespace ReadAndWrite.Pages
             TxtNewName.Text = CurrentUser.DisplayName;
             TxtNewEmail.Text = CurrentUser.Email;
 
-            // Скрываем кнопку заявки если уже автор или админ
-            AuthorRequestPanel.Visibility = CurrentUser.IsReader
+            AuthorRequestPanel.Visibility = CurrentUser.IsReader && !CurrentUser.IsFrozen
                 ? Visibility.Visible : Visibility.Collapsed;
+
+            if (CurrentUser.IsFrozen)
+            {
+                TxtRole.Text += "  🔒 Аккаунт заморожен";
+                TxtRole.Foreground = System.Windows.Media.Brushes.Red;
+            }
         }
 
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
+            if (CurrentUser.IsFrozen)
+            {
+                MessageBox.Show("Ваш аккаунт заморожен. Вы не можете изменять данные.");
+                return;
+            }
+
             string newName = TxtNewName.Text.Trim();
             string newEmail = TxtNewEmail.Text.Trim();
             string newPassword = TxtNewPassword.Password;
@@ -84,6 +100,12 @@ namespace ReadAndWrite.Pages
 
         private void BtnRequestAuthor_Click(object sender, RoutedEventArgs e)
         {
+            if (CurrentUser.IsFrozen)
+            {
+                MessageBox.Show("Ваш аккаунт заморожен. Вы не можете подавать заявки.");
+                return;
+            }
+
             try
             {
                 DatabaseHelper.ExecuteNonQuery(

@@ -146,6 +146,12 @@ namespace ReadAndWrite.Pages
 
         private void BtnSendReview_Click(object sender, RoutedEventArgs e)
         {
+            if (CurrentUser.IsFrozen)
+            {
+                MessageBox.Show("Ваш аккаунт заморожен. Вы не можете оставлять отзывы.");
+                return;
+            }
+
             string text = TxtReview.Text.Trim();
             if (string.IsNullOrEmpty(text) || CmbRating.SelectedItem == null)
             {
