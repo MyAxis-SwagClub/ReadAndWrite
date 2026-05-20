@@ -104,7 +104,7 @@ namespace ReadAndWrite.Pages
         private void BtnLogout_Click(object sender, RoutedEventArgs e)
         {
             CurrentUser.Clear();
-            var loginWindow = new MainWindow();
+            var loginWindow = new LoginWindow();
             loginWindow.Show();
             Window.GetWindow(this).Close();
         }
