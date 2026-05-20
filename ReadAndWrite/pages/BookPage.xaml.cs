@@ -148,6 +148,20 @@ namespace ReadAndWrite.Pages
         {
             if (CurrentUser.IsFrozen)
             {
+                MessageBox.Show("Ваш аккаунт заморожен.");
+                return;
+            }
+            var existing = DatabaseHelper.ExecuteScalar(
+                $"SELECT COUNT(*) FROM Reviews WHERE BookId = {_bookId} " +
+                $"AND UserId = {CurrentUser.UserId}");
+
+            if ((int)existing > 0)
+            {
+                MessageBox.Show("Вы уже оставили отзыв на эту книгу!");
+                return;
+            }
+            if (CurrentUser.IsFrozen)
+            {
                 MessageBox.Show("Ваш аккаунт заморожен. Вы не можете оставлять отзывы.");
                 return;
             }
