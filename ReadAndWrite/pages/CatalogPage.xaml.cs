@@ -93,49 +93,66 @@ namespace ReadAndWrite.Pages
 
             var card = new Border
             {
-                Width = 180,
-                Margin = new Thickness(8),
-                BorderBrush = Brushes.LightGray,
+                Width = 200,
+                Margin = new Thickness(10),
+                BorderBrush = new SolidColorBrush(Color.FromRgb(220, 225, 230)),
                 BorderThickness = new Thickness(1),
-                CornerRadius = new CornerRadius(6),
-                Padding = new Thickness(10),
-                Background = Brushes.White
+                CornerRadius = new CornerRadius(8),
+                Background = Brushes.White,
+                Effect = new System.Windows.Media.Effects.DropShadowEffect
+                {
+                    Color = Colors.Gray,
+                    BlurRadius = 6,
+                    Opacity = 0.15,
+                    ShadowDepth = 2
+                }
             };
 
             var stack = new StackPanel();
 
+            // Обложка
             stack.Children.Add(new Border
             {
-                Height = 120,
-                Background = Brushes.LightSteelBlue,
-                CornerRadius = new CornerRadius(4),
-                Margin = new Thickness(0, 0, 0, 8)
+                Height = 130,
+                Background = new SolidColorBrush(Color.FromRgb(41, 128, 185)),
+                CornerRadius = new CornerRadius(8, 8, 0, 0),
+                Child = new TextBlock
+                {
+                    Text = "📖",
+                    FontSize = 40,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center
+                }
             });
 
-            stack.Children.Add(new TextBlock
+            var info = new StackPanel { Margin = new Thickness(10) };
+
+            info.Children.Add(new TextBlock
             {
                 Text = title,
                 FontWeight = FontWeights.Bold,
                 FontSize = 13,
-                TextWrapping = TextWrapping.Wrap
+                TextWrapping = TextWrapping.Wrap,
+                Foreground = new SolidColorBrush(Color.FromRgb(44, 62, 80))
             });
 
-            stack.Children.Add(new TextBlock
+            info.Children.Add(new TextBlock
             {
                 Text = author,
                 Foreground = Brushes.Gray,
                 FontSize = 12,
-                Margin = new Thickness(0, 4, 0, 4)
+                Margin = new Thickness(0, 4, 0, 2)
             });
 
-            stack.Children.Add(new TextBlock
+            info.Children.Add(new TextBlock
             {
                 Text = $"⭐ {rating:F1}",
                 FontSize = 12,
+                Foreground = new SolidColorBrush(Color.FromRgb(243, 156, 18)),
                 Margin = new Thickness(0, 0, 0, 4)
             });
 
-            stack.Children.Add(new TextBlock
+            info.Children.Add(new TextBlock
             {
                 Text = genres,
                 Foreground = Brushes.SlateGray,
@@ -146,16 +163,18 @@ namespace ReadAndWrite.Pages
 
             var btnOpen = new Button
             {
-                Content = "Открыть",
-                Background = Brushes.SteelBlue,
+                Content = "Открыть →",
+                Background = new SolidColorBrush(Color.FromRgb(41, 128, 185)),
                 Foreground = Brushes.White,
                 BorderThickness = new Thickness(0),
-                Padding = new Thickness(6, 4, 6, 4),
+                Padding = new Thickness(0, 7, 0, 7),
+                FontSize = 13,
                 Tag = bookId
             };
             btnOpen.Click += BtnOpenBook_Click;
-            stack.Children.Add(btnOpen);
+            info.Children.Add(btnOpen);
 
+            stack.Children.Add(info);
             card.Child = stack;
             return card;
         }
