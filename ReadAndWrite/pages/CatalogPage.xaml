@@ -3,34 +3,52 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Title="Каталог книг">
 
-    <Grid Background="White">
+    <Grid Background="#F4F6F8">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!-- Заголовок -->
+        <Border Grid.Row="0" Background="#2C3E50" Padding="20,15">
+            <TextBlock Text="📖 Каталог книг"
+                       FontSize="22" FontWeight="Bold"
+                       Foreground="White"/>
+        </Border>
+
         <!-- Поиск и фильтры -->
-        <WrapPanel Grid.Row="0" Margin="10" Background="WhiteSmoke">
-            <TextBox x:Name="TxtSearch" Width="200" Padding="6"
-                     BorderBrush="Gray" BorderThickness="1"
-                     Margin="5"/>
-            <Button Content="Поиск" Click="BtnSearch_Click"
-                    Background="SteelBlue" Foreground="White"
-                    BorderThickness="0" Padding="8,6" Margin="5"/>
-            <TextBlock Text="Сортировка:" VerticalAlignment="Center" Margin="5"/>
-            <ComboBox x:Name="CmbSort" Width="130" Margin="5"
-                      SelectionChanged="CmbSort_Changed">
-                <ComboBoxItem Content="По названию" IsSelected="True"/>
-                <ComboBoxItem Content="По оценке"/>
-            </ComboBox>
-            <TextBlock Text="Жанр:" VerticalAlignment="Center" Margin="5"/>
-            <ComboBox x:Name="CmbGenre" Width="130" Margin="5"
-                      SelectionChanged="CmbGenre_Changed"/>
-        </WrapPanel>
+        <Border Grid.Row="1" Background="White" Padding="15"
+                BorderBrush="#DDE1E7" BorderThickness="0,0,0,1">
+            <WrapPanel>
+                <TextBox x:Name="TxtSearch" Width="220" Height="32"
+                         Padding="8,5" FontSize="13"
+                         BorderBrush="#BDC3C7" BorderThickness="1"
+                         Margin="0,0,8,0"/>
+                <Button Content="🔍 Поиск" Click="BtnSearch_Click"
+                        Height="32" Padding="12,0"
+                        Background="#2980B9" Foreground="White"
+                        BorderThickness="0" FontSize="13"
+                        Margin="0,0,16,0"/>
+                <TextBlock Text="Сортировка:" VerticalAlignment="Center"
+                           Margin="0,0,6,0" Foreground="#555"/>
+                <ComboBox x:Name="CmbSort" Width="140" Height="32"
+                          Margin="0,0,16,0" FontSize="13"
+                          SelectionChanged="CmbSort_Changed">
+                    <ComboBoxItem Content="По названию" IsSelected="True"/>
+                    <ComboBoxItem Content="По оценке"/>
+                </ComboBox>
+                <TextBlock Text="Жанр:" VerticalAlignment="Center"
+                           Margin="0,0,6,0" Foreground="#555"/>
+                <ComboBox x:Name="CmbGenre" Width="140" Height="32"
+                          FontSize="13" SelectionChanged="CmbGenre_Changed"/>
+            </WrapPanel>
+        </Border>
 
         <!-- Список книг -->
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <WrapPanel x:Name="BooksPanel" Margin="10"/>
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto"
+                      Padding="10">
+            <WrapPanel x:Name="BooksPanel" Margin="5"/>
         </ScrollViewer>
     </Grid>
 </Page>
