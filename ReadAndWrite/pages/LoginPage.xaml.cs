@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using Microsoft.Data.SqlClient;
 using ReadAndWrite.Models;
-using ReadAndWrite.pages;
+using ReadAndWrite.Pages;
 
 namespace ReadAndWrite.Pages
 {
@@ -12,8 +12,6 @@ namespace ReadAndWrite.Pages
         {
             InitializeComponent();
         }
-
-        // Переключение вкладок
         private void BtnLoginTab_Click(object sender, RoutedEventArgs e)
         {
             LoginPanel.Visibility = Visibility.Visible;
@@ -34,7 +32,7 @@ namespace ReadAndWrite.Pages
                     System.Windows.Media.Color.FromRgb(15, 52, 96));
         }
 
-        // Вход
+ 
         private void BtnLogin_Click(object sender, RoutedEventArgs e)
         {
             string login = TxtLogin.Text.Trim();
@@ -69,13 +67,11 @@ namespace ReadAndWrite.Pages
             CurrentUser.RoleId = (int)row["RoleId"];
             CurrentUser.IsFrozen = (bool)row["IsFrozen"];
 
-            // Переходим на главное окно
             var mainWindow = new MainWindow();
             mainWindow.Show();
             Window.GetWindow(this).Close();
         }
 
-        // Регистрация
         private void BtnRegister_Click(object sender, RoutedEventArgs e)
         {
             string login = TxtRegLogin.Text.Trim();
