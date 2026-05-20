@@ -19,6 +19,8 @@ namespace ReadAndWrite
         public MainWindow()
         {
             InitializeComponent();
+            var result = DatabaseHelper.ExecuteScalar("SELECT COUNT(*) FROM Users");
+            MessageBox.Show($"Подключение работает! Пользователей в БД: {result}");
         }
     }
 }

@@ -6,8 +6,8 @@ namespace ReadAndWrite
     public static class DatabaseHelper
     {
         private static readonly string ConnectionString =
-            "Server=localhost;Database=ReadAndWrite;Trusted_Connection=True;" +
-            "TrustServerCertificate=True;";
+    "Server=MYAXIS-SIGMA\\SQLEXPRESS01;Database=ReadAndWrite;Integrated Security=True;" +
+    "TrustServerCertificate=True;";
         public static DataTable ExecuteQuery(string query, SqlParameter[] parameters = null)
         {
             var table = new DataTable();
