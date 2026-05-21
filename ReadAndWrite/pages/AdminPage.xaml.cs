@@ -13,112 +13,7 @@ namespace ReadAndWrite.Pages
             InitializeComponent();
             Loaded += (s, e) => LoadUsers();
         }
-        private void LoadReviews()
-        {
-            var data = DatabaseHelper.ExecuteQuery(@"
-        SELECT r.ReviewId, r.Rating, r.ReviewText,
-               u.DisplayName AS UserName,
-               b.Title AS BookTitle
-        FROM Reviews r
-        JOIN Users u ON r.UserId = u.UserId
-        JOIN Books b ON r.BookId = b.BookId
-        ORDER BY r.ReviewId DESC");
 
-            ContentPanel.Children.Clear();
-
-            if (data.Rows.Count == 0)
-            {
-                ContentPanel.Children.Add(new TextBlock
-                {
-                    Text = "Отзывов нет",
-                    FontSize = 14,
-                    Foreground = Brushes.Gray,
-                    Margin = new Thickness(0, 20, 0, 0),
-                    HorizontalAlignment = HorizontalAlignment.Center
-                });
-                return;
-            }
-
-            foreach (DataRow row in data.Rows)
-            {
-                int reviewId = (int)row["ReviewId"];
-
-                var card = new Border
-                {
-                    Background = Brushes.White,
-                    CornerRadius = new CornerRadius(4),
-                    Padding = new Thickness(15),
-                    Margin = new Thickness(0, 0, 0, 8)
-                };
-
-                var grid = new Grid();
-                grid.ColumnDefinitions.Add(new ColumnDefinition
-                { Width = new GridLength(1, GridUnitType.Star) });
-                grid.ColumnDefinitions.Add(new ColumnDefinition
-                { Width = GridLength.Auto });
-
-                var info = new StackPanel();
-
-                info.Children.Add(new TextBlock
-                {
-                    Text = $"{row["UserName"]}  ⭐ {row["Rating"]}",
-                    FontSize = 14,
-                    FontWeight = FontWeights.Bold,
-                    Foreground = new SolidColorBrush(Color.FromRgb(26, 82, 118))
-                });
-
-                info.Children.Add(new TextBlock
-                {
-                    Text = $"Книга: {row["BookTitle"]}",
-                    FontSize = 12,
-                    Foreground = Brushes.Gray,
-                    Margin = new Thickness(0, 3, 0, 3)
-                });
-
-                info.Children.Add(new TextBlock
-                {
-                    Text = row["ReviewText"]?.ToString(),
-                    FontSize = 13,
-                    TextWrapping = TextWrapping.Wrap,
-                    Foreground = new SolidColorBrush(Color.FromRgb(80, 80, 80))
-                });
-
-                Grid.SetColumn(info, 0);
-                grid.Children.Add(info);
-
-                var btnDelete = new Button
-                {
-                    Content = "Удалить",
-                    Background = new SolidColorBrush(Color.FromRgb(192, 57, 43)),
-                    Foreground = Brushes.White,
-                    BorderThickness = new Thickness(0),
-                    Padding = new Thickness(10, 5, 10, 5),
-                    VerticalAlignment = VerticalAlignment.Center
-                };
-                btnDelete.Click += (s, e) =>
-                {
-                    var result = MessageBox.Show(
-                        "Удалить этот отзыв?", "Подтверждение",
-                        MessageBoxButton.YesNo);
-
-                    if (result != MessageBoxResult.Yes) return;
-
-                    DatabaseHelper.ExecuteNonQuery(
-                        "DELETE FROM Reviews WHERE ReviewId = @id",
-                        new SqlParameter[]
-                        {
-                    new SqlParameter("@id", reviewId)
-                        });
-                    LoadReviews();
-                };
-
-                Grid.SetColumn(btnDelete, 1);
-                grid.Children.Add(btnDelete);
-
-                card.Child = grid;
-                ContentPanel.Children.Add(card);
-            }
-        }
         private void BtnTab_Click(object sender, RoutedEventArgs e)
         {
             string tab = ((Button)sender).Tag.ToString();
@@ -180,7 +75,27 @@ namespace ReadAndWrite.Pages
                 Grid.SetColumn(info, 0);
                 grid.Children.Add(info);
 
-                var btn = new Button
+                var buttons = new StackPanel
+                {
+                    Orientation = Orientation.Horizontal,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+
+                // Кнопка смены роли
+                var btnRole = new Button
+                {
+                    Content = "Сменить роль",
+                    Background = new SolidColorBrush(Color.FromRgb(36, 113, 163)),
+                    Foreground = Brushes.White,
+                    BorderThickness = new Thickness(0),
+                    Padding = new Thickness(10, 5, 10, 5),
+                    Margin = new Thickness(0, 0, 8, 0),
+                    Tag = new object[] { userId, row["RoleName"].ToString() }
+                };
+                btnRole.Click += BtnChangeRole_Click;
+
+                // Кнопка заморозки
+                var btnFreeze = new Button
                 {
                     Content = isFrozen ? "Разморозить" : "Заморозить",
                     Background = isFrozen
@@ -192,10 +107,13 @@ namespace ReadAndWrite.Pages
                     Tag = userId,
                     VerticalAlignment = VerticalAlignment.Center
                 };
-                btn.Click += BtnFreezeUser_Click;
+                btnFreeze.Click += BtnFreezeUser_Click;
 
-                Grid.SetColumn(btn, 1);
-                grid.Children.Add(btn);
+                buttons.Children.Add(btnRole);
+                buttons.Children.Add(btnFreeze);
+
+                Grid.SetColumn(buttons, 1);
+                grid.Children.Add(buttons);
 
                 card.Child = grid;
                 ContentPanel.Children.Add(card);
@@ -214,17 +132,93 @@ namespace ReadAndWrite.Pages
 
             var user = DatabaseHelper.ExecuteQuery(
                 $"SELECT IsFrozen FROM Users WHERE UserId = {userId}");
-
             bool isFrozen = (bool)user.Rows[0]["IsFrozen"];
 
             DatabaseHelper.ExecuteNonQuery(
                 "UPDATE Users SET IsFrozen = @val WHERE UserId = @id",
                 new SqlParameter[]
                 {
-            new SqlParameter("@val", !isFrozen),
-            new SqlParameter("@id", userId)
+                    new SqlParameter("@val", !isFrozen),
+                    new SqlParameter("@id", userId)
                 });
             LoadUsers();
+        }
+
+        private void BtnChangeRole_Click(object sender, RoutedEventArgs e)
+        {
+            var tag = (object[])((Button)sender).Tag;
+            int userId = (int)tag[0];
+            string currentRole = (string)tag[1];
+
+            if (userId == CurrentUser.UserId)
+            {
+                MessageBox.Show("Вы не можете изменить свою роль!");
+                return;
+            }
+
+            var window = new Window
+            {
+                Title = "Сменить роль пользователя",
+                Width = 300,
+                Height = 220,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                ResizeMode = ResizeMode.NoResize
+            };
+
+            var stack = new StackPanel { Margin = new Thickness(15) };
+
+            stack.Children.Add(new TextBlock
+            {
+                Text = $"Текущая роль: {currentRole}",
+                Margin = new Thickness(0, 0, 0, 12),
+                FontSize = 13
+            });
+
+            stack.Children.Add(new TextBlock
+            {
+                Text = "Выберите новую роль:",
+                Margin = new Thickness(0, 0, 0, 8)
+            });
+
+            var cmb = new ComboBox
+            {
+                Padding = new Thickness(6),
+                Margin = new Thickness(0, 0, 0, 12)
+            };
+            cmb.Items.Add(new ComboBoxItem { Content = "Читатель", Tag = 1 });
+            cmb.Items.Add(new ComboBoxItem { Content = "Автор", Tag = 2 });
+            cmb.Items.Add(new ComboBoxItem { Content = "Администратор", Tag = 3 });
+            cmb.SelectedIndex = 0;
+            stack.Children.Add(cmb);
+
+            var btn = new Button
+            {
+                Content = "Сохранить",
+                Background = new SolidColorBrush(Color.FromRgb(30, 132, 73)),
+                Foreground = Brushes.White,
+                BorderThickness = new Thickness(0),
+                Padding = new Thickness(12, 7, 12, 7),
+                HorizontalAlignment = HorizontalAlignment.Left
+            };
+
+            btn.Click += (s, e2) =>
+            {
+                int newRoleId = (int)((ComboBoxItem)cmb.SelectedItem).Tag;
+                DatabaseHelper.ExecuteNonQuery(
+                    "UPDATE Users SET RoleId = @role WHERE UserId = @id",
+                    new SqlParameter[]
+                    {
+                        new SqlParameter("@role", newRoleId),
+                        new SqlParameter("@id", userId)
+                    });
+                MessageBox.Show("Роль изменена!");
+                window.Close();
+                LoadUsers();
+            };
+
+            stack.Children.Add(btn);
+            window.Content = stack;
+            window.ShowDialog();
         }
 
         // ── КНИГИ ─────────────────────────────────────────────────────
@@ -305,7 +299,6 @@ namespace ReadAndWrite.Pages
             int bookId = (int)((Button)sender).Tag;
             var book = DatabaseHelper.ExecuteQuery(
                 $"SELECT IsFrozen FROM Books WHERE BookId = {bookId}");
-
             bool isFrozen = (bool)book.Rows[0]["IsFrozen"];
 
             DatabaseHelper.ExecuteNonQuery(
@@ -396,7 +389,6 @@ namespace ReadAndWrite.Pages
                     Foreground = Brushes.White,
                     BorderThickness = new Thickness(0),
                     Padding = new Thickness(10, 5, 10, 5),
-                    Tag = complaintId,
                     VerticalAlignment = VerticalAlignment.Center
                 };
                 btn.Click += (s, e) =>
@@ -482,7 +474,7 @@ namespace ReadAndWrite.Pages
                 Grid.SetColumn(info, 0);
                 grid.Children.Add(info);
 
-                var buttons = new StackPanel
+                var btns = new StackPanel
                 {
                     Orientation = Orientation.Horizontal,
                     VerticalAlignment = VerticalAlignment.Center
@@ -499,7 +491,6 @@ namespace ReadAndWrite.Pages
                 };
                 btnApprove.Click += (s, e) =>
                 {
-                    // Меняем роль на Автор (RoleId = 2)
                     DatabaseHelper.ExecuteNonQuery(
                         "UPDATE Users SET RoleId = 2 WHERE UserId = @uid;" +
                         "UPDATE RoleRequests SET Status = N'Одобрено' " +
@@ -532,17 +523,119 @@ namespace ReadAndWrite.Pages
                     LoadRequests();
                 };
 
-                buttons.Children.Add(btnApprove);
-                buttons.Children.Add(btnReject);
+                btns.Children.Add(btnApprove);
+                btns.Children.Add(btnReject);
 
-                Grid.SetColumn(buttons, 1);
-                grid.Children.Add(buttons);
+                Grid.SetColumn(btns, 1);
+                grid.Children.Add(btns);
 
                 card.Child = grid;
                 ContentPanel.Children.Add(card);
             }
+        }
 
+        // ── ОТЗЫВЫ ────────────────────────────────────────────────────
+        private void LoadReviews()
+        {
+            var data = DatabaseHelper.ExecuteQuery(@"
+                SELECT r.ReviewId, r.Rating, r.ReviewText,
+                       u.DisplayName AS UserName,
+                       b.Title AS BookTitle
+                FROM Reviews r
+                JOIN Users u ON r.UserId = u.UserId
+                JOIN Books b ON r.BookId = b.BookId
+                ORDER BY r.ReviewId DESC");
+
+            ContentPanel.Children.Clear();
+
+            if (data.Rows.Count == 0)
+            {
+                ContentPanel.Children.Add(new TextBlock
+                {
+                    Text = "Отзывов нет",
+                    FontSize = 14,
+                    Foreground = Brushes.Gray,
+                    Margin = new Thickness(0, 20, 0, 0),
+                    HorizontalAlignment = HorizontalAlignment.Center
+                });
+                return;
+            }
+
+            foreach (DataRow row in data.Rows)
+            {
+                int reviewId = (int)row["ReviewId"];
+
+                var card = new Border
+                {
+                    Background = Brushes.White,
+                    CornerRadius = new CornerRadius(4),
+                    Padding = new Thickness(15),
+                    Margin = new Thickness(0, 0, 0, 8)
+                };
+
+                var grid = new Grid();
+                grid.ColumnDefinitions.Add(new ColumnDefinition
+                { Width = new GridLength(1, GridUnitType.Star) });
+                grid.ColumnDefinitions.Add(new ColumnDefinition
+                { Width = GridLength.Auto });
+
+                var info = new StackPanel();
+                info.Children.Add(new TextBlock
+                {
+                    Text = $"{row["UserName"]}  ⭐ {row["Rating"]}",
+                    FontSize = 14,
+                    FontWeight = FontWeights.Bold,
+                    Foreground = new SolidColorBrush(Color.FromRgb(26, 82, 118))
+                });
+                info.Children.Add(new TextBlock
+                {
+                    Text = $"Книга: {row["BookTitle"]}",
+                    FontSize = 12,
+                    Foreground = Brushes.Gray,
+                    Margin = new Thickness(0, 3, 0, 3)
+                });
+                info.Children.Add(new TextBlock
+                {
+                    Text = row["ReviewText"]?.ToString(),
+                    FontSize = 13,
+                    TextWrapping = TextWrapping.Wrap,
+                    Foreground = new SolidColorBrush(Color.FromRgb(80, 80, 80))
+                });
+
+                Grid.SetColumn(info, 0);
+                grid.Children.Add(info);
+
+                var btnDelete = new Button
+                {
+                    Content = "Удалить",
+                    Background = new SolidColorBrush(Color.FromRgb(192, 57, 43)),
+                    Foreground = Brushes.White,
+                    BorderThickness = new Thickness(0),
+                    Padding = new Thickness(10, 5, 10, 5),
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+                btnDelete.Click += (s, e) =>
+                {
+                    var result = MessageBox.Show(
+                        "Удалить этот отзыв?", "Подтверждение",
+                        MessageBoxButton.YesNo);
+                    if (result != MessageBoxResult.Yes) return;
+
+                    DatabaseHelper.ExecuteNonQuery(
+                        "DELETE FROM Reviews WHERE ReviewId = @id",
+                        new SqlParameter[]
+                        {
+                            new SqlParameter("@id", reviewId)
+                        });
+                    LoadReviews();
+                };
+
+                Grid.SetColumn(btnDelete, 1);
+                grid.Children.Add(btnDelete);
+
+                card.Child = grid;
+                ContentPanel.Children.Add(card);
+            }
         }
     }
-
 }
