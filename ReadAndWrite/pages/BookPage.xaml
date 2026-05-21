@@ -65,6 +65,8 @@
                                         Click="BtnAddToList_Click"
                                         Background="#1E8449" Foreground="White"
                                         BorderThickness="0" Padding="10,5"/>
+
+                                
                             </StackPanel>
                         </StackPanel>
                     </Border>
@@ -105,6 +107,13 @@
                         </StackPanel>
                     </Border>
                 </Grid>
+                <!-- Жалоба на книгу -->
+                <Button Content="⚠ Пожаловаться на книгу"
+        Click="BtnComplaint_Click"
+        Background="#E74C3C" Foreground="White"
+        BorderThickness="0" Padding="10,5"
+        HorizontalAlignment="Left"
+        Margin="0,10,0,0"/>
 
                 <!-- Отзывы снизу -->
                 <TextBlock Text="💬 Отзывы читателей" FontSize="15"

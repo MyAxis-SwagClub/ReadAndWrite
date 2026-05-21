@@ -143,7 +143,87 @@ namespace ReadAndWrite.Pages
                 MessageBox.Show("Ошибка при добавлении в список");
             }
         }
+        private void BtnComplaint_Click(object sender, RoutedEventArgs e)
+        {
+            if (CurrentUser.IsFrozen)
+            {
+                MessageBox.Show("Ваш аккаунт заморожен.");
+                return;
+            }
 
+            // Создаём простое диалоговое окно для ввода причины
+            var window = new Window
+            {
+                Title = "Жалоба на книгу",
+                Width = 400,
+                Height = 220,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                ResizeMode = ResizeMode.NoResize
+            };
+
+            var stack = new StackPanel { Margin = new Thickness(15) };
+
+            stack.Children.Add(new TextBlock
+            {
+                Text = "Опишите причину жалобы:",
+                Margin = new Thickness(0, 0, 0, 8)
+            });
+
+            var txtReason = new TextBox
+            {
+                Height = 80,
+                TextWrapping = TextWrapping.Wrap,
+                AcceptsReturn = true,
+                Padding = new Thickness(7),
+                BorderBrush = System.Windows.Media.Brushes.Gray,
+                Margin = new Thickness(0, 0, 0, 12)
+            };
+            stack.Children.Add(txtReason);
+
+            var btn = new Button
+            {
+                Content = "Отправить жалобу",
+                Background = System.Windows.Media.Brushes.SteelBlue,
+                Foreground = System.Windows.Media.Brushes.White,
+                BorderThickness = new Thickness(0),
+                Padding = new Thickness(12, 7, 12, 7),
+                HorizontalAlignment = HorizontalAlignment.Left
+            };
+
+            btn.Click += (s, e2) =>
+            {
+                string reason = txtReason.Text.Trim();
+                if (string.IsNullOrEmpty(reason))
+                {
+                    MessageBox.Show("Введите причину жалобы");
+                    return;
+                }
+
+                try
+                {
+                    DatabaseHelper.ExecuteNonQuery(
+                        "INSERT INTO Complaints (UserId, BookId, Reason) " +
+                        "VALUES (@uid, @bid, @reason)",
+                        new Microsoft.Data.SqlClient.SqlParameter[]
+                        {
+                    new Microsoft.Data.SqlClient.SqlParameter("@uid", CurrentUser.UserId),
+                    new Microsoft.Data.SqlClient.SqlParameter("@bid", _bookId),
+                    new Microsoft.Data.SqlClient.SqlParameter("@reason", reason)
+                        });
+
+                    MessageBox.Show("Жалоба отправлена! Администратор рассмотрит её.");
+                    window.Close();
+                }
+                catch
+                {
+                    MessageBox.Show("Ошибка при отправке жалобы");
+                }
+            };
+
+            stack.Children.Add(btn);
+            window.Content = stack;
+            window.ShowDialog();
+        }
         private void BtnSendReview_Click(object sender, RoutedEventArgs e)
         {
             if (CurrentUser.IsFrozen)
